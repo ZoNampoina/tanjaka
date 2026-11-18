@@ -19,7 +19,9 @@ Le changement d’adresse demande ce transfert car chaque adresse dispose de son
 
 ## Publication sur GitHub Pages
 
-Dans les paramètres du dépôt, ouvrir **Pages**, choisir **Deploy from a branch**, puis **main** et **/(root)**. Enregistrer. GitHub affiche l’adresse publiée dans cette page.
+Le workflow `.github/workflows/pages.yml` publie les fichiers de l’application après chaque modification de la branche `main`.
+
+Dans les paramètres du dépôt, **Pages → Source** doit utiliser **GitHub Actions**. GitHub affiche l’adresse publiée dans cette page et dans le résultat du workflow.
 
 Les fichiers sont statiques et fonctionnent avec un serveur HTTP, sans installation de dépendances. Le service worker prépare les ressources pour une utilisation hors ligne après le premier chargement réussi.
 
