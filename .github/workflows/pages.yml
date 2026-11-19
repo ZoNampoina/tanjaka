@@ -2,21 +2,44 @@ name: Publier Tanjaka
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'design/**']
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: github-pages
+  group: tanjaka-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Installer le navigateur de vérification
+        run: |
+          npm install --no-save --package-lock=false playwright@1.65.1
+          npx playwright install --with-deps chromium
+      - name: Vérifier le journal, les parcours et les écrans
+        run: node qa/verify.mjs
+      - name: Conserver les captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apercus-tanjaka
+          path: qa/screenshots
+          if-no-files-found: ignore
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -30,6 +53,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html manifest.webmanifest sw.js .nojekyll icon-192.png icon-512.png tanjaka.*.css tanjaka.*.js _site/
+          cp -R assets _site/
       - name: Envoyer les fichiers
         uses: actions/upload-pages-artifact@v4
         with:

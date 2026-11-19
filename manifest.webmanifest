@@ -2,13 +2,13 @@
   "id": "./",
   "name": "Tanjaka",
   "short_name": "Tanjaka",
-  "description": "Entraînement à la maison et nutrition",
+  "description": "La force se travaille. Ton entraînement à la maison, tes repas et ton carnet.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0b191e",
-  "theme_color": "#0b191e",
+  "background_color": "#f3f3ec",
+  "theme_color": "#f3f3ec",
   "icons": [
     {
       "src": "./icon-192.png",

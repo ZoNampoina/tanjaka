@@ -28,3 +28,19 @@ Les fichiers sont statiques et fonctionnent avec un serveur HTTP, sans installat
 ## Développement
 
 Modifier les fichiers directement à la racine du dépôt. Après une modification des ressources mises en cache, mettre à jour la version et la liste des fichiers dans `sw.js`.
+
+## Édition Atelier · novembre 2026
+
+Identité éditoriale sportive : Barlow Condensed et Manrope servies localement, papier clair ou encre sombre, vert acide et vermillon, photos en noir et blanc, ingrédients illustrés.
+
+Le mode guidé propose un échauffement, la saisie des séries, le repos et la reprise après interruption. Un échauffement seul reste distinct d’une séance complète. Le carnet compare les premières séries du même exercice et de la même variante déclarée. Les choix de repas s’adaptent aux ingrédients absents tout en conservant les repas déjà notés.
+
+La clé `tanjaka-2026-v1` et les historiques v1/v2 sont conservés. Les champs facultatifs `warmups`, `why` et `appearance` complètent le format v2. Les données ne quittent pas le navigateur.
+
+### Vérifications
+
+Le workflow vérifie les journaux v1/v2 et les imports, les six écrans à 320, 390, 768 et 1280 pixels dans les deux apparences, le parcours guidé complet, le minuteur, la reprise, les remplacements d’ingrédients et le chargement hors ligne. La publication de `main` dépend de ces vérifications.
+
+Pour lancer les vérifications : `npm install --no-save --package-lock=false playwright@1.65.1`, puis `npx playwright install chromium` et `node qa/verify.mjs`.
+
+Les fichiers de l’ancienne édition restent disponibles pour la compatibilité des anciens clients et les vérifications de migration. Après une modification du code ou du style, créer de nouveaux noms de ressources, puis mettre à jour `index.html`, la version et la liste précachée dans `sw.js`. Voir `THIRD_PARTY_NOTICES.md` pour les ressources visuelles.
