@@ -71,10 +71,10 @@ await (async function verify(){
     await page.locator('img:not([loading="lazy"])').evaluateAll(images=>Promise.all(images.map(image=>image.decode().catch(()=>{}))));
     const metrics=await page.evaluate(()=>{
       const visible=[...document.querySelectorAll("button,input,select")].filter(el=>el.getClientRects().length&&!el.closest("[hidden]"));
-      return {width:innerWidth,scroll:document.documentElement.scrollWidth,controls:visible.filter(el=>{const r=el.getBoundingClientRect();return r.left<-.6||r.right>innerWidth+.6;}).map(el=>el.outerHTML.slice(0,180)),font:document.fonts.check("800 24px Barlow"),images:[...document.images].filter(i=>i.loading!=="lazy").every(i=>i.complete&&i.naturalWidth>0)};
+      return {width:innerWidth,scroll:document.documentElement.scrollWidth,controls:visible.filter(el=>{const r=el.getBoundingClientRect();return r.left<-.6||r.right>innerWidth+.6;}).map(el=>el.outerHTML.slice(0,180)),brokenWords:[...document.querySelectorAll("h1")].flatMap(h=>{const words=[];const walker=document.createTreeWalker(h,NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode()){for(const match of node.textContent.matchAll(/\S+/g)){const range=document.createRange();range.setStart(node,match.index);range.setEnd(node,match.index+match[0].length);if(range.getClientRects().length>1)words.push(match[0]);}}return words;}),font:document.fonts.check("800 24px Barlow"),images:[...document.images].filter(i=>i.loading!=="lazy").every(i=>i.complete&&i.naturalWidth>0)};
     });
     assert(metrics.scroll<=metrics.width+1,label+" horizontal overflow "+JSON.stringify(metrics));
-    assert.deepEqual(metrics.controls,[],label+" clipped controls");
+    assert.deepEqual(metrics.controls,[],label+" clipped controls");assert.deepEqual(metrics.brokenWords,[],label+" broken headline words");
     assert(metrics.font,label+" display font");
     assert(metrics.images,label+" broken images");
   }
@@ -125,7 +125,7 @@ await (async function verify(){
     assert.equal(await active.page.locator("#timer-value").innerText(),"00:00");
     await action(active.page,"guide-exit");await active.page.reload({waitUntil:"networkidle"});
     await active.page.locator('.resume-strip [data-do="resume"]').click();
-    assert((await active.page.locator(".guide-entry .overline").innerText()).includes("2 sur 2"),"Resume at first incomplete set");
+    assert((await active.page.locator(".guide-entry .overline").innerText()).toLocaleLowerCase("fr-FR").includes("2 sur 2"),"Resume at first incomplete set");
     let saved=1;
     while(saved<12){
       for(const field of await active.page.locator('[data-input="rep"]').all())await field.fill(String(saved%4+8));
