@@ -30,7 +30,7 @@ await (async function verify(){
   assert.equal(merged.weights.find(w=>w.date==="2026-11-18").value,65.3);
   assert(merged.weights.some(w=>w.date==="2026-11-17"));
   assert(merged.sessions["2026-11-16|A"].complete);
-  assert(merged.warmups["2026-11-19"]);
+  assert(merged.warmups["2026-11-19"]);assert.equal(merged.why,"Ma force");assert.equal(merged.appearance,"dark");
   console.log("PASS Journal v1/v2, merge, profile, weights, measurements and session history.");
   const mime={".html":"text/html",".js":"text/javascript",".css":"text/css",".webmanifest":"application/manifest+json",".png":"image/png",".jpg":"image/jpeg",".webp":"image/webp",".svg":"image/svg+xml",".ttf":"font/ttf",".txt":"text/plain"};
   const server=http.createServer((req,res)=>{
@@ -68,6 +68,7 @@ await (async function verify(){
   async function go(page,name){await page.locator('[data-page="'+name+'"]:visible').first().click();}
   async function action(page,name){await page.locator('[data-do="'+name+'"]:visible').first().click();}
   async function layout(page,label){
+    await page.locator('img:not([loading="lazy"])').evaluateAll(images=>Promise.all(images.map(image=>image.decode().catch(()=>{}))));
     const metrics=await page.evaluate(()=>{
       const visible=[...document.querySelectorAll("button,input,select")].filter(el=>el.getClientRects().length&&!el.closest("[hidden]"));
       return {width:innerWidth,scroll:document.documentElement.scrollWidth,controls:visible.filter(el=>{const r=el.getBoundingClientRect();return r.left<-.6||r.right>innerWidth+.6;}).map(el=>el.outerHTML.slice(0,180)),font:document.fonts.check("800 24px Barlow"),images:[...document.images].filter(i=>i.loading!=="lazy").every(i=>i.complete&&i.naturalWidth>0)};
@@ -80,6 +81,14 @@ await (async function verify(){
   try{
     const design=await open();
     assert((await design.page.locator(".cover-description").innerText()).includes("récupères"),"Rest day home");
+    fs.mkdirSync("qa/screenshots",{recursive:true});
+    const desktop=await design.page.screenshot({path:"qa/screenshots/home-desktop.jpg",type:"jpeg",quality:65});
+    console.log("TANJAKA_SCREENSHOT_DESKTOP="+desktop.toString("base64"));
+    await design.page.setViewportSize({width:390,height:1100});
+    const mobile=await design.page.screenshot({path:"qa/screenshots/home-mobile.jpg",type:"jpeg",quality:65});
+    console.log("TANJAKA_SCREENSHOT_MOBILE="+mobile.toString("base64"));
+    await design.page.setViewportSize({width:1280,height:1000});
+
     for(const appearance of ["light","dark"]){
       await go(design.page,"settings");
       await design.page.locator('[data-input="appearance"]').selectOption(appearance);
@@ -90,14 +99,7 @@ await (async function verify(){
         }
       }
     }
-    await design.page.setViewportSize({width:1280,height:950});
-    await go(design.page,"settings");await design.page.locator('[data-input="appearance"]').selectOption("light");await go(design.page,"home");
-    fs.mkdirSync("qa/screenshots",{recursive:true});
-    const desktop=await design.page.screenshot({path:"qa/screenshots/home-desktop.jpg",type:"jpeg",quality:65});
-    shots.push(["DESKTOP",desktop.toString("base64")]);
-    await design.page.setViewportSize({width:390,height:1100});
-    const mobile=await design.page.screenshot({path:"qa/screenshots/home-mobile.jpg",type:"jpeg",quality:65});
-    shots.push(["MOBILE",mobile.toString("base64")]);
+
     const untouched=await readState(design.page);
     assert.deepEqual(untouched.weights,fixture.weights);assert.deepEqual(untouched.measures,fixture.measures);assert(untouched.sessions["2026-11-16|A"].complete);
     console.log("PASS All six pages at 320/390/768/1280px, light and dark, assets and existing journal.");
@@ -176,6 +178,6 @@ await (async function verify(){
     await meal.context.close();
     assert.deepEqual(errors,[],"Browser errors");assert.deepEqual(badResponses,[],"Missing resources");
     console.log("TANJAKA_RESULT="+JSON.stringify({status:"PASS",widths:[320,390,768,1280],themes:["light","dark"],pages:6,journal:"v1/v2 preserved",guidedSets:12,offline:true,browserErrors:errors.length}));
-    for(const [name,base64]of shots)console.log("TANJAKA_SCREENSHOT_"+name+"="+base64);
+
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })();

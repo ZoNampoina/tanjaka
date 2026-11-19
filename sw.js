@@ -1,8 +1,8 @@
 const VERSION="atelier-20261119";
-const CACHE="tanjaka-atelier-f0dc1085c308";
+const CACHE="tanjaka-atelier-c9e37b641842";
 const scope=self.registration.scope;
 const home=new URL("./",scope);
-const assets=new Map(Object.entries({"./":"text/html","./tanjaka.6182acce1f99.css":"text/css","./tanjaka.f0dc1085c308.js":"javascript","./manifest.webmanifest":"json","./icon-192.png":"image/png","./icon-512.png":"image/png","./assets/mark.svg":"image/svg+xml","./assets/barlow-condensed.ttf":null,"./assets/manrope.ttf":null,"./assets/rice.webp":"image/webp","./assets/beans.webp":"image/webp","./assets/bread.webp":"image/webp","./assets/cheese.webp":"image/webp","./assets/yogurt.webp":"image/webp","./assets/milk.webp":"image/webp","./assets/banana.webp":"image/webp","./assets/eggs.webp":"image/webp","./assets/pushup0.jpg":"image/jpeg","./assets/pushup1.jpg":"image/jpeg"}).map(([path,type])=>[new URL(path,scope).href,type]));
+const assets=new Map(Object.entries({"./":"text/html","./tanjaka.6182acce1f99.css":"text/css","./tanjaka.c9e37b641842.js":"javascript","./manifest.webmanifest":"json","./icon-192.png":"image/png","./icon-512.png":"image/png","./assets/mark.svg":"image/svg+xml","./assets/barlow-condensed.ttf":null,"./assets/manrope.ttf":null,"./assets/rice.webp":"image/webp","./assets/beans.webp":"image/webp","./assets/bread.webp":"image/webp","./assets/cheese.webp":"image/webp","./assets/yogurt.webp":"image/webp","./assets/milk.webp":"image/webp","./assets/banana.webp":"image/webp","./assets/eggs.webp":"image/webp","./assets/pushup0.jpg":"image/jpeg","./assets/pushup1.jpg":"image/jpeg"}).map(([path,type])=>[new URL(path,scope).href,type]));
 self.addEventListener("install",event=>{
   event.waitUntil((async()=>{
     const responses=await Promise.all([...assets].map(async([url,type])=>{
